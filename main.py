@@ -39,6 +39,14 @@ class Game:
             return True
         return False
 
+    def add_history(self):
+        self.history.append(([[self.board[i][j] for j in range(8)] for i in range(8)], self.queen_x, self.queen_y,
+                             self.king_w_x, self.king_w_y, self.king_b_x, self.king_b_y, self.player))
+
+    def undo(self):
+        self.board, self.queen_x, self.queen_y, self.king_w_x, self.king_w_y, self.king_b_x, self.king_b_y, self.player\
+            = self.history.pop()
+
     def check(self, x, y):
         return (self.board[y][x] == '.' and 0 <= x < 8 and 0 <= y < 8
                 and (x == self.queen_x or y == self.queen_y or abs(x - self.queen_x) == abs(y - self.queen_y)))
@@ -46,6 +54,7 @@ class Game:
     def move_queen(self, x, y):
         if (self.player == 'W' and self.board[y][x] == '.' and 0 <= x < 8 and 0 <= y < 8
                 and (x == self.queen_x or y == self.queen_y or abs(x - self.queen_x) == abs(y - self.queen_y))):
+            self.add_history()
             self.board[self.queen_y][self.queen_x] = '.'
             self.queen_y = y
             self.queen_x = x
@@ -57,6 +66,7 @@ class Game:
         if (self.player == 'W' and self.board[y][x] == '.' and 0 <= x < 8 and 0 <= y < 8 and abs(x - self.king_w_x) < 2
                 and abs(y - self.king_w_y) < 2 and abs(x - self.king_b_x) > 1 and abs(y - self.king_b_y) > 1
                 and not self.check(x, y)):
+            self.add_history()
             self.board[self.king_w_y][self.king_w_x] = '.'
             self.king_w_y = y
             self.king_w_x = x
@@ -68,6 +78,7 @@ class Game:
         if (self.player == 'B' and 0 <= x < 8 and 0 <= y < 8 and abs(x - self.king_b_x) < 2
                 and abs(y - self.king_b_y) < 2 and abs(x - self.king_w_x) > 1 and abs(y - self.king_w_y) > 1
                 and not self.check(x, y)):
+            self.add_history()
             self.board[self.king_b_y][self.king_b_x] = '.'
             self.king_b_y = y
             self.king_b_x = x
